@@ -1,31 +1,31 @@
 'use strict';
-var configBuilder = require('openfin-config-builder'),
-    openfinLauncher = require('openfin-launcher'),
-    path = require('path'),
-    fs = require('fs'),
-    request = require('request'),
-    parseURLOrFile = require('./parse-url-or-file'),
-    meow;
+const configBuilder = require('openfin-config-builder');
+const { connect, Identity } = require('hadouken-js-adapter');
+const path = require('path');
+const fs = require('fs');
+const request = require('request');
+const parseURLOrFile = require('./parse-url-or-file');
 
 function main(cli) {
-    meow = cli;
-
-    var flags = cli.flags,
-        name = flags.n || flags.name,
-        url = flags.u || flags.url,
-        config = flags.c || flags.config || 'app.json',
-        launch = flags.l || flags.launch,
-        parsedUrl = url ? parseURLOrFile(url) : url;
+    const flags = cli.flags;
+    console.log(flags);
+    const { name, url, config, launch } = flags;
+    const parsedUrl = url ? parseURLOrFile(url) : url;
 
     if (isEmpty(flags)) {
-        console.log(cli.help);
+        cli.showHelp();
         return;
     }
 
     try {
         writeToConfig(name, parsedUrl, config, function(configObj) {
             if (launch) {
-                launchOpenfin(config);
+                const conf = require(path.resolve(config));
+                launchOpenfin(conf)
+                    .then(fin => fin.Application.create(conf.startup_app))
+                    .then(a => a.run())
+                    .then(() => process.exit(0))
+                    .catch(e => console.error('Failed launch', e));
             }
 
             if (configObj) {
@@ -43,7 +43,6 @@ function fetchInstaller(flags, configObj) {
         appName = configObj.startup_app ? configObj.startup_app.name : null,
         name = flags.n || flags.name || appName || 'openfin',
         openfinInstaller = require('openfin-installer')(configObj),
-
         fetchOptions = {
             noExt: flags.noExt || null,
             rvmConfig: flags.rvmConfig || null,
@@ -55,25 +54,34 @@ function fetchInstaller(flags, configObj) {
         };
 
     if (destination) {
-        openfinInstaller
-            .fetchInstaller(fetchOptions)
-            .then(function() {
-                    console.log('Installer zip written to', destination);
-                },
-                function(reason) {
-                    console.log(reason);
-                });
+        openfinInstaller.fetchInstaller(fetchOptions).then(
+            function() {
+                console.log('Installer zip written to', destination);
+            },
+            function(reason) {
+                console.log(reason);
+            }
+        );
     }
 
     if (hyperlink) {
-
-        console.log('\n', openfinInstaller.generateInstallUrl(encodeURIComponent(name), fetchOptions.config,
-            fetchOptions.noExt, fetchOptions.rvmConfig, fetchOptions.supportEmail, fetchOptions.dnl), '\n');
+        console.log(
+            '\n',
+            openfinInstaller.generateInstallUrl(
+                encodeURIComponent(name),
+                fetchOptions.config,
+                fetchOptions.noExt,
+                fetchOptions.rvmConfig,
+                fetchOptions.supportEmail,
+                fetchOptions.dnl
+            ),
+            '\n'
+        );
     }
 }
 
 function isURL(str) {
-    return (typeof str === 'string') && str.lastIndexOf('http') >= 0;
+    return typeof str === 'string' && str.lastIndexOf('http') >= 0;
 }
 
 //makeshift is object empty function
@@ -88,16 +96,11 @@ function isEmpty(flags) {
 
 function onError(message, err) {
     console.log(message, err);
-    console.log(meow.help);
 }
 
 //will launch download the rvm and launch openfin
 function launchOpenfin(config) {
-    openfinLauncher.launchOpenFin({
-        configPath: isURL(config) ? config : path.resolve(config)
-    }).fail(function(err) {
-        onError('launch failed', err);
-    });
+    return connect(config);
 }
 
 //write the specified config to disk.
@@ -137,17 +140,21 @@ function writeToConfig(name, url, config, callback) {
         }
 
         //create or update the config
-        configAction({
-            startup_app: url ? startup_app : null,
-            shortcut: shortcut
-        }, config).fail(function(err) {
-            console.log(err);
-        }).done(function(configObj) {
-            console.log(actionMessage, path.resolve(config));
-            callback(configObj);
-        });
+        configAction(
+            {
+                startup_app: url ? startup_app : null,
+                shortcut: shortcut
+            },
+            config
+        )
+            .fail(function(err) {
+                console.log(err);
+            })
+            .done(function(configObj) {
+                console.log(actionMessage, path.resolve(config));
+                callback(configObj);
+            });
     });
 }
-
 
 module.exports = main;

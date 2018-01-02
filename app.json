@@ -1,0 +1,22 @@
+{
+    "devtools_port": 9090,
+    "uuid": "example_app",
+    "startup_app": {
+        "name": "OpenfinPOC",
+        "description": "OpenFin POC",
+        "url": "http://www.openfin.co",
+        "uuid": "testapp",
+        "autoShow": true,
+        "nonPersistent": false,
+        "saveWindowState": false
+    },
+    "runtime": {
+        "arguments": "--enable-multi-runtime --debug=5858",
+        "version": "8.56.28.3"
+    },
+    "shortcut": {
+        "company": "OpenFin",
+        "description": "Openfin POC",
+        "name": "Openfin POC"
+    }
+}
