@@ -2,7 +2,7 @@
 
 'use strict';
 const meow = require('meow'),
-    openfinCli = require('./');
+    openfinCli = require('./src');
 
 const options = {
     flags: {
