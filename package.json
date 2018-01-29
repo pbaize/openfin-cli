@@ -38,7 +38,8 @@
     "time-grunt": "^1.0.0"
   },
   "scripts": {
-    "test": "grunt mochacli"
+      "start": "node cli",
+      "test": "grunt mochacli"
   },
   "bin": {
     "openfin": "cli.js"
