@@ -35,20 +35,20 @@ function main(cli) {
 }
 
 function fetchInstaller(flags, configObj) {
-    var hyperlink = flags.h || flags.hyperlink,
-        destination = flags.d || flags.destination,
-        appName = configObj.startup_app ? configObj.startup_app.name : null,
-        name = flags.n || flags.name || appName || 'openfin',
-        openfinInstaller = require('openfin-installer')(configObj),
-        fetchOptions = {
-            noExt: flags.noExt || null,
-            rvmConfig: flags.rvmConfig || null,
-            supportEmail: flags.supportEmail || null,
-            dnl: flags.dnl || null,
-            destination: flags.d || flags.destination,
-            config: flags.c || null,
-            name: name
-        };
+    const hyperlink = flags.h || flags.hyperlink;
+    const destination = flags.d || flags.destination;
+    const appName = configObj.startup_app ? configObj.startup_app.name : null;
+    const name = flags.n || flags.name || appName || 'openfin';
+    const openfinInstaller = require('openfin-installer')(configObj);
+    const fetchOptions = {
+        noExt: flags.noExt || null,
+        rvmConfig: flags.rvmConfig || null,
+        supportEmail: flags.supportEmail || null,
+        dnl: flags.dnl || null,
+        destination: flags.d || flags.destination,
+        config: flags.c || null,
+        name: name
+    };
 
     if (destination) {
         openfinInstaller.fetchInstaller(fetchOptions).then(
@@ -81,7 +81,7 @@ function fetchInstaller(flags, configObj) {
 
 //makeshift is object empty function
 function isEmpty(flags) {
-    for (var key in flags) {
+    for (let key in flags) {
         if (flags.hasOwnProperty(key)) {
             return false;
         }
