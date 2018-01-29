@@ -33,21 +33,17 @@ function writeToConfig(name, url, config) {
 
     const shortcut = {};
     const startup_app = {};
-
-    if (config) {
-        if (name) {
-            startup_app.name = name;
-            shortcut.name = name;
-            shortcut.company = name;
-            shortcut.description = name;
-        }
-        if (url) {
-            startup_app.url = url;
-        }
+    if (name) {
+        startup_app.name = name;
+        shortcut.name = name;
+        shortcut.company = name;
+        shortcut.description = name;
+    } if (url) {
+        startup_app.url = url;
     }
     
     const updates = {
-        startup_app: url ? startup_app : {},
+        startup_app: startup_app,
         shortcut: shortcut
     };
 

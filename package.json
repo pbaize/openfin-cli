@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "grunt": "^0.4.0",
-    "hadouken-js-adapter": "git://github.com/pbaize/js-adapter.git#feature/RUN-3680-js-adapter-tests-port-discovery",
+    "hadouken-js-adapter": "^0.2.1",
     "meow": "^4.0.0",
     "openfin-installer": "latest",
     "request": "^2.53.0",
