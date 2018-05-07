@@ -13,10 +13,10 @@ const writeFile = p(fs.writeFile)
 
 module.exports = writeToConfig
 
-async function writeToConfig(name, url, config) {
+function writeToConfig(name, url, config) {
 
     if (isURL(config)) {
-        return config
+        return Promise.resolve(config)
     }
 
     const shortcut = {};
@@ -55,7 +55,7 @@ function write (location,base,updates,message) {
         config.startup_app.uuid = config.startup_app.name + '-' + Math.random().toString(36).substring(2);
     }
     if (!location) {
-        return config
+        return Promise.resolve(config)
     }
     const loc = path.resolve(location)
     return writeFile(loc, JSON.stringify(config, null, '    '))

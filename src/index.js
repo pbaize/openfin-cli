@@ -6,7 +6,7 @@ const fs = require('fs');
 const request = require('request');
 const parseURLOrFile = require('./parse-url-or-file');
 
-async function main(cli) {
+function main(cli) {
     const flags = cli.flags;
     const { name, url, config, launch } = flags;
     const parsedUrl = url ? parseURLOrFile(url) : url;
