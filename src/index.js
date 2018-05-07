@@ -1,12 +1,12 @@
 'use strict';
-const { connect, Identity } = require('hadouken-js-adapter');
+const { launch, Identity } = require('hadouken-js-adapter');
 const writeToConfig = require('./write-config')
 const path = require('path');
 const fs = require('fs');
 const request = require('request');
 const parseURLOrFile = require('./parse-url-or-file');
 
-function main(cli) {
+async function main(cli) {
     const flags = cli.flags;
     const { name, url, config, launch } = flags;
     const parsedUrl = url ? parseURLOrFile(url) : url;
@@ -16,12 +16,16 @@ function main(cli) {
         return;
     }
 
+    console.log(flags)
+
     writeToConfig(name, parsedUrl, config)
-        .then(function(configObj) {
+        .then(function(manifestUrl) {
+            const configObj = { manifestUrl }
             if (launch) {
                 launchOpenfin(configObj)
-                    .then(fin => fin.Application.create(configObj.startup_app))
-                    .then(a => a.run())
+                    .then(p => console.log(`OpenFin running on port ${p}`))
+                    // .then(fin => fin.Application.create(configObj.startup_app))
+                    // .then(a => a.run())
                     .then(() => process.exit(0))
                     .catch(e => console.error('Failed launch', e));
             }
@@ -95,7 +99,7 @@ function onError(message, err) {
 
 //will launch download the rvm and launch openfin
 function launchOpenfin(config) {
-    return connect(config);
+    return launch(config);
 }
 
 

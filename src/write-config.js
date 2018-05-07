@@ -11,30 +11,19 @@ function isURL(str) {
 const readFile = p(fs.readFile)
 const writeFile = p(fs.writeFile)
 
-module.exports = function (name, url, config) {
-    return writeToConfig(name, url, config)
-        .then(conf => {
-            if (!conf.uuid && conf.startup_app) {
-                if (conf.startup_app.uuid) {
-                    conf.uuid = conf.startup_app.uuid + '-runtime';
-                } else {
-                    config.uuid = 'cli' + '-' + 'runtime' + Math.random().toString(36).substring(2);
-                }
-            } return conf
-        })
-}
+module.exports = writeToConfig
 
-
-function writeToConfig(name, url, config) {
+async function writeToConfig(name, url, config) {
 
     if (isURL(config)) {
-        return request(config).then(body => JSON.parse(body))
+        return config
     }
 
     const shortcut = {};
     const startup_app = {};
     if (name) {
         startup_app.name = name;
+        startup_app.uuid = name;
         shortcut.name = name;
         shortcut.company = name;
         shortcut.description = name;
@@ -48,12 +37,12 @@ function writeToConfig(name, url, config) {
     };
 
     return readFile(config)
-        .then(conf => write(name, JSON.parse(conf),updates,'Updating Config'))
+        .then(conf => write(config, JSON.parse(conf),updates,'Updating Config'))
         .catch(err => {
             if(err.code === 'ENOENT') {
-                return write(name, {}, updates, 'Creating Config')
+                return write(config, {}, updates, 'Creating Config')
             } else if (!config) {
-                return write(undefined, {}, updates)
+                return write('app.json', {}, updates, 'No config name provided, writing to')
             } else {
                 throw err
             }
@@ -72,7 +61,7 @@ function write (location,base,updates,message) {
     return writeFile(loc, JSON.stringify(config, null, '    '))
         .then(() => {
             console.log(message, loc)
-            return config
+            return location
         })   
 }
 
