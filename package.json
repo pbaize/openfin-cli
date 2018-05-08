@@ -22,7 +22,7 @@
     "meow": "^2.0.0",
     "openfin-config-builder": "latest",
     "openfin-installer": "latest",
-    "openfin-launcher": "latest",
+    "hadouken-js-adapter": "^0.30.2",
     "request": "^2.53.0"
   },
   "devDependencies": {
@@ -37,8 +37,8 @@
     "grunt-jsbeautifier": "^0.2.7"
   },
   "scripts": {
-      "start": "node cli",
-      "test": "grunt mochacli"
+    "start": "node cli",
+    "test": "grunt mochacli"
   },
   "bin": {
     "openfin": "cli.js"

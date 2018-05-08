@@ -1,6 +1,6 @@
 'use strict';
 var configBuilder = require('openfin-config-builder'),
-    openfinLauncher = require('openfin-launcher'),
+    {launch} = require('hadouken-js-adapter'),
     path = require('path'),
     fs = require('fs'),
     request = require('request'),
@@ -92,12 +92,8 @@ function onError(message, err) {
 }
 
 //will launch download the rvm and launch openfin
-function launchOpenfin(config) {
-    openfinLauncher.launchOpenFin({
-        configPath: isURL(config) ? config : path.resolve(config)
-    }).fail(function(err) {
-        onError('launch failed', err);
-    });
+function launchOpenfin(manifestUrl) {
+    launch({manifestUrl})
 }
 
 //write the specified config to disk.
